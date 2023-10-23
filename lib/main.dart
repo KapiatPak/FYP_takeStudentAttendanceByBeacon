@@ -13,9 +13,10 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: HomePage(),
+      initialRoute: '/',
       routes: {
-        '/record': (context) => RecordPage(),
+        '/': (context) => HomePage(),
+        '/record': (context) => RecordPage(recordList: ModalRoute.of(context)!.settings.arguments as List<String>),
       },
     );
   }
@@ -29,6 +30,7 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   late String currentTime;
   bool buttonEnabled = true;
+  List<String> recordList = [];
 
   @override
   void initState() {
@@ -39,7 +41,8 @@ class _HomePageState extends State<HomePage> {
   void updateTime() {
     DateTime now = DateTime.now();
     String formattedTime = DateFormat('HH:mm').format(now);
-    String displayTime = formattedTime.substring(0, 2) + ':00 - ' + formattedTime.substring(0, 2) + ':30';
+    String displayTime =
+        formattedTime.substring(0, 2) + ':00 - ' + formattedTime.substring(0, 2) + ':30';
     setState(() {
       currentTime = displayTime;
       buttonEnabled = !formattedTime.endsWith(':00') && !formattedTime.endsWith(':30');
@@ -50,19 +53,11 @@ class _HomePageState extends State<HomePage> {
   void recordTime() {
     DateTime now = DateTime.now();
     String formattedTime = DateFormat('HH:mm').format(now);
-    Navigator.pushNamed(
-      context,
-      '/record',
-      arguments: formattedTime,
-    );
     setState(() {
+      recordList.add(formattedTime);
       buttonEnabled = false;
     });
-    Future.delayed(const Duration(minutes: 30), () {
-      setState(() {
-        buttonEnabled = true;
-      });
-    });
+    Navigator.pushNamed(context, '/record', arguments: recordList);
   }
 
   @override
@@ -71,16 +66,33 @@ class _HomePageState extends State<HomePage> {
       appBar: AppBar(
         title: Text('Home'),
       ),
+      bottomNavigationBar: BottomNavigationBar(
+        items: const <BottomNavigationBarItem>[
+          BottomNavigationBarItem(
+            icon: Icon(Icons.home),
+            label: 'Home',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.list),
+            label: 'Record',
+          ),
+        ],
+        currentIndex: 0,
+        onTap: (index) {
+          if (index == 1) {
+            Navigator.pushNamed(context, '/record', arguments: recordList);
+          }
+        },
+      ),
       body: Column(
         children: [
-          if (currentTime != null)
-            Container(
-              padding: EdgeInsets.all(16.0),
-              child: Text(
-                currentTime,
-                style: TextStyle(fontSize: 24.0),
-              ),
+          Padding(
+            padding: EdgeInsets.all(16.0),
+            child: Text(
+              currentTime,
+              style: TextStyle(fontSize: 24.0),
             ),
+          ),
           ElevatedButton(
             onPressed: buttonEnabled ? recordTime : null,
             child: Text('Record Time'),
@@ -92,15 +104,24 @@ class _HomePageState extends State<HomePage> {
 }
 
 class RecordPage extends StatelessWidget {
+  final List<String> recordList;
+  static const routeName = '/record';
+
+  RecordPage({required this.recordList});
+
   @override
   Widget build(BuildContext context) {
-    final args = ModalRoute.of(context)!.settings.arguments as String?;
     return Scaffold(
       appBar: AppBar(
         title: Text('Record'),
       ),
-      body: Center(
-        child: Text('Recorded Time: $args'),
+      body: ListView.builder(
+        itemCount: recordList.length,
+        itemBuilder: (context, index) {
+          return ListTile(
+            title: Text(recordList[index]),
+          );
+        },
       ),
     );
   }
