@@ -1,0 +1,6 @@
+# analysis_options.yaml
+linter:
+  rules:
+    # Add your desired lint rules here
+    # For example, to enable the prefer_single_quotes rule:
+    - prefer_single_quotes
