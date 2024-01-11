@@ -1,128 +1,306 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
-
-void main() {
-  runApp(MyApp());
-}
-
+import '../helpers/db_helper.dart';
+import '../models/class_schedule.dart';
+ 
+void main() => runApp(MyApp());
+ 
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Navigation Demo',
+      title: 'TutorialKart - Flutter',
       theme: ThemeData(
-        primarySwatch: Colors.blue,
+        primarySwatch: Colors.purple,
       ),
-      initialRoute: '/',
-      routes: {
-        '/': (context) => HomePage(),
-        '/record': (context) => RecordPage(recordList: ModalRoute.of(context)!.settings.arguments as List<String>),
-      },
+      home: MyHomePage(),
     );
   }
 }
-
-class HomePage extends StatefulWidget {
+ 
+class MyHomePage extends StatefulWidget {
   @override
-  _HomePageState createState() => _HomePageState();
+  _MyHomePageState createState() => _MyHomePageState();
 }
-
-class _HomePageState extends State<HomePage> {
-  late String currentTime;
-  bool buttonEnabled = true;
-  List<String> recordList = [];
-
-  @override
-  void initState() {
-    super.initState();
-    updateTime();
-  }
-
-  void updateTime() {
-    DateTime now = DateTime.now();
-    String formattedTime = DateFormat('HH:mm').format(now);
-    String displayTime =
-        formattedTime.substring(0, 2) + ':00 - ' + formattedTime.substring(0, 2) + ':30';
-    setState(() {
-      currentTime = displayTime;
-      buttonEnabled = !formattedTime.endsWith(':00') && !formattedTime.endsWith(':30');
-    });
-    Future.delayed(const Duration(minutes: 30), updateTime);
-  }
-
-  void recordTime() {
-    DateTime now = DateTime.now();
-    String formattedTime = DateFormat('HH:mm').format(now);
-    setState(() {
-      recordList.add(formattedTime);
-      buttonEnabled = false;
-    });
-    Navigator.pushNamed(context, '/record', arguments: recordList);
-  }
-
+ 
+class _MyHomePageState extends State<MyHomePage> {
+  final dbHelper = DatabaseHelper.instance;
+ 
+  List<Car> cars = [];
+  List<Car> carsByName = [];
+ 
+  //controllers used in insert operation UI
+  TextEditingController nameController = TextEditingController();
+  TextEditingController milesController = TextEditingController();
+ 
+  //controllers used in update operation UI
+  TextEditingController idUpdateController = TextEditingController();
+  TextEditingController nameUpdateController = TextEditingController();
+  TextEditingController milesUpdateController = TextEditingController();
+ 
+  //controllers used in delete operation UI
+  TextEditingController idDeleteController = TextEditingController();
+ 
+  //controllers used in query operation UI
+  TextEditingController queryController = TextEditingController();
+ 
+  final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
+ 
+//   void _showMessageInScaffold(String message){
+//   _scaffoldKey.currentState!.showSnackBar(
+//     SnackBar(
+//       content: Text(message),
+//     )
+//   );
+// }
+ 
+ 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Home'),
-      ),
-      bottomNavigationBar: BottomNavigationBar(
-        items: const <BottomNavigationBarItem>[
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: 'Home',
+    return DefaultTabController(
+      length: 5,
+      child: Scaffold(
+        key: _scaffoldKey,
+        appBar: AppBar(
+          bottom: TabBar(
+            tabs: [
+              Tab(
+                text: "Insert",
+              ),
+              Tab(
+                text: "View",
+              ),
+              Tab(
+                text: "Query",
+              ),
+              Tab(
+                text: "Update",
+              ),
+              Tab(
+                text: "Delete",
+              ),
+            ],
           ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.list),
-            label: 'Record',
-          ),
-        ],
-        currentIndex: 0,
-        onTap: (index) {
-          if (index == 1) {
-            Navigator.pushNamed(context, '/record', arguments: recordList);
-          }
-        },
-      ),
-      body: Column(
-        children: [
-          Padding(
-            padding: EdgeInsets.all(16.0),
-            child: Text(
-              currentTime,
-              style: TextStyle(fontSize: 24.0),
+          title: Text('TutorialKart - Flutter SQLite Tutorial'),
+        ),
+        body: TabBarView(
+          children: [
+            Center(
+              child: Column(
+                children: <Widget>[
+                  Container(
+                    padding: EdgeInsets.all(20),
+                    child: TextField(
+                      controller: nameController,
+                      decoration: InputDecoration(
+                        border: OutlineInputBorder(),
+                        labelText: 'Car Name',
+                      ),
+                    ),
+                  ),
+                  Container(
+                    padding: EdgeInsets.all(20),
+                    child: TextField(
+                      controller: milesController,
+                      decoration: InputDecoration(
+                        border: OutlineInputBorder(),
+                        labelText: 'Car Miles',
+                      ),
+                    ),
+                  ),
+                  ElevatedButton(
+                    child: Text('Insert Car Details'),
+                    onPressed: () {
+                      String name = nameController.text;
+                      int miles = int.parse(milesController.text);
+                      _insert(name, miles);
+                    },
+                  ),
+                ],
+              ),
             ),
-          ),
-          ElevatedButton(
-            onPressed: buttonEnabled ? recordTime : null,
-            child: Text('Record Time'),
-          ),
-        ],
+            Container(
+              child: ListView.builder(
+                padding: const EdgeInsets.all(8),
+                itemCount: cars.length + 1,
+                itemBuilder: (BuildContext context, int index) {
+                  if (index == cars.length) {
+                    return ElevatedButton(
+                      child: Text('Refresh'),
+                      onPressed: () {
+                        setState(() {
+                          _queryAll();
+                        });
+                      },
+                    );
+                  }
+                  return Container(
+                    height: 40,
+                    child: Center(
+                      child: Text(
+                        '[${cars[index].id}] ${cars[index].name} - ${cars[index].miles} miles',
+                        style: TextStyle(fontSize: 18),
+                      ),
+                    ),
+                  );
+                },
+              ),
+            ),
+            Center(
+              child: Column(
+                children: <Widget>[
+                  Container(
+                    padding: EdgeInsets.all(20),
+                    child: TextField(
+                      controller: queryController,
+                      decoration: InputDecoration(
+                        border: OutlineInputBorder(),
+                        labelText: 'Car Name',
+                      ),
+                      onChanged: (text) {
+                        if (text.length >= 2) {
+                          setState(() {
+                            _query(text);
+                          });
+                        } else {
+                          setState(() {
+                            carsByName.clear();
+                          });
+                        }
+                      },
+                    ),
+                    height: 100,
+                  ),
+                  Container(
+                    height: 300,
+                    child: ListView.builder(
+                      padding: const EdgeInsets.all(8),
+                      itemCount: carsByName.length,
+                      itemBuilder: (BuildContext context, int index) {
+                        return Container(
+                          height: 50,
+                          margin: EdgeInsets.all(2),
+                          child: Center(
+                            child: Text(
+                              '[${carsByName[index].id}] ${carsByName[index].name} - ${carsByName[index].miles} miles',
+                              style: TextStyle(fontSize: 18),
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Center(
+              child: Column(
+                children: <Widget>[
+                  Container(
+                    padding: EdgeInsets.all(20),
+                    child: TextField(
+                      controller: idUpdateController,
+                      decoration: InputDecoration(
+                        border: OutlineInputBorder(),
+                        labelText: 'Car id',
+                      ),
+                    ),
+                  ),
+                  Container(
+                    padding: EdgeInsets.all(20),
+                    child: TextField(
+                      controller: nameUpdateController,
+                      decoration: InputDecoration(
+                        border: OutlineInputBorder(),
+                        labelText: 'Car Name',
+                      ),
+                    ),
+                  ),
+                  Container(
+                    padding: EdgeInsets.all(20),
+                    child: TextField(
+                      controller: milesUpdateController,
+                      decoration: InputDecoration(
+                        border: OutlineInputBorder(),
+                        labelText: 'Car Miles',
+                      ),
+                    ),
+                  ),
+                  ElevatedButton(
+                    child: Text('Update Car Details'),
+                    onPressed: () {
+                      int id = int.parse(idUpdateController.text);
+                      String name = nameUpdateController.text;
+                      int miles = int.parse(milesUpdateController.text);
+                      _update(id, name, miles);
+                    },
+                  ),
+                ],
+              ),
+            ),
+            Center(
+              child: Column(
+                children: <Widget>[
+                  Container(
+                    padding: EdgeInsets.all(20),
+                    child: TextField(
+                      controller: idDeleteController,
+                      decoration: InputDecoration(
+                        border: OutlineInputBorder(),
+                        labelText: 'Car id',
+                      ),
+                    ),
+                  ),
+                  ElevatedButton(
+                    child: Text('Delete'),
+                    onPressed: () {
+                      int id = int.parse(idDeleteController.text);
+                      _delete(id);
+                    },
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
-}
-
-class RecordPage extends StatelessWidget {
-  final List<String> recordList;
-  static const routeName = '/record';
-
-  RecordPage({required this.recordList});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Record'),
-      ),
-      body: ListView.builder(
-        itemCount: recordList.length,
-        itemBuilder: (context, index) {
-          return ListTile(
-            title: Text(recordList[index]),
-          );
-        },
-      ),
-    );
+ 
+  void _insert(name, miles) async {
+    // row to insert
+    Map<String, dynamic> row = {
+      DatabaseHelper.columnName: name,
+      DatabaseHelper.columnMiles: miles
+    };
+    Car car = Car.fromMap(row);
+    final id = await dbHelper.insert(car);
+    _showMessageInScaffold('inserted row id: $id');
+  }
+ 
+  void _queryAll() async {
+    final allRows = await dbHelper.queryAllRows();
+    cars.clear();
+    allRows.forEach((row) => cars.add(Car.fromMap(row)));
+    _showMessageInScaffold('Query done.');
+    setState(() {});
+  }
+ 
+  void _query(name) async {
+    final allRows = await dbHelper.queryRows(name);
+    carsByName.clear();
+    allRows.forEach((row) => carsByName.add(Car.fromMap(row)));
+  }
+ 
+  void _update(id, name, miles) async {
+    // row to update
+    Car car = Car(id, name, miles);
+    final rowsAffected = await dbHelper.update(car);
+    _showMessageInScaffold('updated $rowsAffected row(s)');
+  }
+ 
+  void _delete(id) async {
+    // Assuming that the number of rows is the id for the last row.
+    final rowsDeleted = await dbHelper.delete(id);
+    _showMessageInScaffold('deleted $rowsDeleted row(s): row $id');
   }
 }
