@@ -1,13 +1,11 @@
-// lib/main.dart
-
 import 'package:flutter/material.dart';
-import 'views/ScheduleView.dart';
+import 'views/common/login_view.dart';
 
 void main() {
-  runApp(MyApp());
+  runApp(MyAttendanceApp());
 }
 
-class MyApp extends StatelessWidget {
+class MyAttendanceApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -15,7 +13,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: ScheduleView(),
+      home: LoginView(),
     );
   }
 }
