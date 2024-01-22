@@ -8,7 +8,7 @@ class AuthService {
 
     if (email == 'u@e.com' && password == '1111111') {
       // Successful login, navigate to the home page
-      Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => StudentPage()));
+      Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => StudentAttendanceView()));
     } else {
       // Failed login, show error message
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Invalid credentials')));

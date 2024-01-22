@@ -28,7 +28,7 @@ class _LoginViewState extends State<LoginView> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Login'),
+        title: Text('MPU Attendance App'),
       ),
       body: Center(
         child: Card(
@@ -72,23 +72,23 @@ class _LoginViewState extends State<LoginView> {
                   ElevatedButton(
                     onPressed: () {
                       Navigator.of(context).push(
-                          MaterialPageRoute(builder: (context) => AdminPage()));
+                          MaterialPageRoute(builder: (context) => ManageDataView()));
                     },
-                    child: Text('admin_page'),
+                    child: Text('test button go admin_page'),
                   ),
                   ElevatedButton(
                     onPressed: () {
                       Navigator.of(context).push(
-                          MaterialPageRoute(builder: (context) => StudentPage()));
+                          MaterialPageRoute(builder: (context) => StudentAttendanceView()));
                     },
-                    child: Text('student_page'),
+                    child: Text('test button go student_page'),
                   ),
                   ElevatedButton(
                     onPressed: () {
                       Navigator.of(context).push(
-                          MaterialPageRoute(builder: (context) => TeacherPage()));
+                          MaterialPageRoute(builder: (context) => TeacherModityPage()));
                     },
-                    child: Text('teacher_page'),
+                    child: Text('test button go teacher_page'),
                   ),
                 ],
               ),
