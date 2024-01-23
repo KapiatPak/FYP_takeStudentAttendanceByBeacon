@@ -40,19 +40,19 @@ class _TeacherModityPageState extends State<TeacherModityPage> {
         items: [
           BottomNavigationBarItem(
             icon: new Icon(Icons.access_time),
-            label: 'Modity Schedule Page',
+            label: 'Function1',
           ),
           BottomNavigationBarItem(
             icon: new Icon(Icons.table_chart),
-            label: 'Question',
+            label: 'Function2',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.history),
-            label: 'SchedulePage',
+            label: 'Function3',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.person),
-            label: 'RecordPage',
+            label: 'Function4',
           ),
         ],
       ),

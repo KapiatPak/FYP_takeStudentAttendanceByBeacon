@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'views/common/login_view.dart';
-import 'services/db_service.dart';
+// import 'services/db_service.dart';
 
 void main() async {
   // 确保Flutter绑定已初始化
   WidgetsFlutterBinding.ensureInitialized();
 
   // 获取数据库服务实例
-  final dbService = DatabaseService.instance;
+  // final dbService = DatabaseService.instance;
 
   // 初始化数据库并验证假数据
   // await dbService.initialize();
