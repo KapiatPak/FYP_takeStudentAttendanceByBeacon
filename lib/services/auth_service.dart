@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../views/student_attendance_view.dart';
+import '../views/student/student_attendance_view.dart';
 
 class AuthService {
   static Future<void> login(String email, String password, BuildContext context) async {

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import '../../services/auth_service.dart';
-import '../manage_schedule_view.dart';
-import '../student_attendance_view.dart';
-import '../teacher_modity_view.dart';
+import '../admin/adminPage.dart';
+import '../student/student_attendance_view.dart';
+import '../teacher/teacher_modity_view.dart';
 
 
 class LoginView extends StatefulWidget {
@@ -72,7 +72,7 @@ class _LoginViewState extends State<LoginView> {
                   ElevatedButton(
                     onPressed: () {
                       Navigator.of(context).push(
-                          MaterialPageRoute(builder: (context) => ManageDataView()));
+                          MaterialPageRoute(builder: (context) => AdminPage()));
                     },
                     child: Text('test button go admin_page'),
                   ),

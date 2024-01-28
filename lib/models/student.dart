@@ -1,17 +1,20 @@
 class Student {
-  final int id;
-  final String name;
-  final String email;
+  final int student_id;
+  final String student_name;
 
-  Student({required this.id, required this.name, required this.email});
+  Student({required this.student_id, required this.student_name});
 
-  // Convert a Student into a Map. The keys must correspond to the names of the
-  // columns in the database.
   Map<String, dynamic> toMap() {
     return {
-      'id': id,
-      'name': name,
-      'email': email,
+      'student_id': student_id,
+      'student_name': student_name,
     };
+  }
+
+    factory Student.fromMap(Map<String, dynamic> map) {
+    return Student(
+      student_id: map['student_id'],
+      student_name: map['student_name'],
+    );
   }
 }

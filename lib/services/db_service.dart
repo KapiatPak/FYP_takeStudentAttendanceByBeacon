@@ -1,3 +1,4 @@
+//lib/services/db_service.dart
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 
@@ -29,6 +30,7 @@ class DatabaseService {
     const textType = 'TEXT';
     const integerType = 'INTEGER';
     const timeType = 'TEXT';
+    
     // Create tables
     await db.execute('''
       CREATE TABLE Teacher (
@@ -91,57 +93,57 @@ class DatabaseService {
   }
 
   // #region DummyData Testing
-  Future<void> initialize() async {
-    // 初始化数据库
-    await database;
+  // Future<void> initialize() async {
+  //   // 初始化数据库
+  //   await database;
 
-    // Insert dummy data
-    final db = await instance.database;
-    await db.rawInsert(
-        'INSERT INTO Teacher (teacher_id, teacher_name) VALUES (?, ?)',
-        [1, 'Mr. Tan']);
-    await db.rawInsert(
-        'INSERT INTO Teacher (teacher_id, teacher_name) VALUES (?, ?)',
-        [2, 'Mr. Lim']);
+  //   // Insert dummy data
+  //   final db = await instance.database;
+  //   await db.rawInsert(
+  //       'INSERT INTO Teacher (teacher_id, teacher_name) VALUES (?, ?)',
+  //       [1, 'Mr. Tan']);
+  //   await db.rawInsert(
+  //       'INSERT INTO Teacher (teacher_id, teacher_name) VALUES (?, ?)',
+  //       [2, 'Mr. Lim']);
 
-    await db.rawInsert(
-        'INSERT INTO Module (module_id, module_name, teacher_id) VALUES (?, ?, ?)',
-        [1, 'Mobile App Development', 1]);
-    await db.rawInsert(
-        'INSERT INTO Module (module_id, module_name, teacher_id) VALUES (?, ?, ?)',
-        [2, 'Web App Development', 1]);
+  //   await db.rawInsert(
+  //       'INSERT INTO Module (module_id, module_name, teacher_id) VALUES (?, ?, ?)',
+  //       [1, 'Mobile App Development', 1]);
+  //   await db.rawInsert(
+  //       'INSERT INTO Module (module_id, module_name, teacher_id) VALUES (?, ?, ?)',
+  //       [2, 'Web App Development', 1]);
 
-    await db.rawInsert(
-        'INSERT INTO Class_schedule (class_date, class_time, module_id, student_id, room_id) VALUES (?, ?, ?, ?, ?)',
-        ['2021-10-01', '09:00:00', 1, 1, 1]);
+  //   await db.rawInsert(
+  //       'INSERT INTO Class_schedule (class_date, class_time, module_id, student_id, room_id) VALUES (?, ?, ?, ?, ?)',
+  //       ['2021-10-01', '09:00:00', 1, 1, 1]);
 
-    await db.rawInsert(
-        'INSERT INTO Student (student_id, student_name) VALUES (?, ?)',
-        [1, 'John']);
+  //   await db.rawInsert(
+  //       'INSERT INTO Student (student_id, student_name) VALUES (?, ?)',
+  //       [1, 'John']);
 
-    // await db.rawInsert(
-    //     'INSERT INTO Attendance (attendance_id, attendance_time, module_id, student_id, room_id) VALUES (?, ?, ?, ?, ?)',
-    //     [1, '09:00:00', 1, 1, 1]);
+  //   // await db.rawInsert(
+  //   //     'INSERT INTO Attendance (attendance_id, attendance_time, module_id, student_id, room_id) VALUES (?, ?, ?, ?, ?)',
+  //   //     [1, '09:00:00', 1, 1, 1]);
 
-    await db.rawInsert(
-        'INSERT INTO Room (room_id, room_name, beacon_id) VALUES (?, ?, ?)',
-        [1, 'Room 1', 'N51']);
+  //   await db.rawInsert(
+  //       'INSERT INTO Room (room_id, room_name, beacon_id) VALUES (?, ?, ?)',
+  //       [1, 'Room 1', 'N51']);
 
-    // 验证假数据
-    await _verifyDummyData();
-  }
+  //   // 验证假数据
+  //   await _verifyDummyData();
+  // }
 
-  Future<void> _verifyDummyData() async {
-    // 查询各个表以验证数据
-    final db = await instance.database;
-    print('Teachers: ${await db.query('Teacher')}');
-    print('Modules: ${await db.query('Module')}');
-    print('Class_schedule: ${await db.query('Class_schedule')}');
-    print('Students: ${await db.query('Student')}');
-    print('Attendance: ${await db.query('Attendance')}');
-    print('Rooms: ${await db.query('Room')}');
-  }
-  // #endregion
+  // Future<void> _verifyDummyData() async {
+  //   // 查询各个表以验证数据
+  //   final db = await instance.database;
+  //   print('Teachers: ${await db.query('Teacher')}');
+  //   print('Modules: ${await db.query('Module')}');
+  //   print('Class_schedule: ${await db.query('Class_schedule')}');
+  //   print('Students: ${await db.query('Student')}');
+  //   print('Attendance: ${await db.query('Attendance')}');
+  //   print('Rooms: ${await db.query('Room')}');
+  // }
+  // // #endregion
 
   // #region CRUD operations for Teacher table
   Future<int> createTeacher(Map<String, dynamic> teacher) async {
