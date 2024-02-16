@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'BeaconPage.dart';
 
 class StudentAttendanceView extends StatefulWidget {
   @override
@@ -9,7 +10,7 @@ class _StudentAttendanceViewState extends State<StudentAttendanceView> {
   int _currentIndex = 0;
 
   final List<Widget> _children = [
-    TakeAttendancePage(),
+    BeaconPage(),
     SchedulePage(),
     AttendanceRecordPage(),
     PersonalInfoPage(),
@@ -59,12 +60,12 @@ class _StudentAttendanceViewState extends State<StudentAttendanceView> {
 }
 
 // Placeholder widget for Take Attendance Page
-class TakeAttendancePage extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Center(child: Text('Take Attendance Page'));
-  }
-}
+// class BeaconPage extends StatelessWidget {
+//   @override
+//   Widget build(BuildContext context) {
+//     return Center(child: Text('Take Attendance Page'));
+//   }
+// }
 
 // Placeholder widget for Schedule Page
 class SchedulePage extends StatelessWidget {

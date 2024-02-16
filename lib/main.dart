@@ -22,4 +22,4 @@ class MyAttendanceApp extends StatelessWidget {
       home: LoginView(),
     );
   }
-}
+} 
